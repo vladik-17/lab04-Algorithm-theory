@@ -1,4 +1,6 @@
+from argparse import ArgumentParser
 from collections.abc import Iterator
+from decimal import Decimal
 from itertools import islice
 from string import ascii_lowercase
 
@@ -9,6 +11,45 @@ def letter_pairs() -> Iterator[str]:
     return (first + second for first in ascii_lowercase for second in ascii_lowercase)
 
 
+def function_values(a: float, b: float) -> Iterator[Decimal]:
+    """Вычислить значения функции на отрезке [a, b] с шагом 0.01."""
+    x = Decimal(str(a))
+    end = Decimal(str(b))
+    step = Decimal("0.01")
+    coefficient = Decimal("0.1")
+
+    # Decimal позволяет прибавлять 0.01 без накопления ошибки округления.
+    while x <= end:
+        yield coefficient * x ** 2 + 5 * x - 2
+        x += step
+
+
+def first_three_cities(line: str) -> Iterator[str]:
+    cities = filter(lambda city: len(city) > 5, line.split())
+    for _ in range(3):
+        city = next(cities, None)
+        # Если подходящих городов меньше трёх, выведем только найденные.
+        if city is None:
+            return
+        yield city
+
+
+def main() -> None:
+    parser = ArgumentParser(description="Задания варианта 12")
+    parser.add_argument("task", nargs="?", choices=("pairs", "values", "cities"), default="pairs")
+    task = parser.parse_args().task
+
+    if task == "pairs":
+        for pair in islice(letter_pairs(), 50):
+            print(pair)
+    elif task == "values":
+        for value in islice(function_values(-5, 7), 20):
+            print(f"{value:.5f}")
+    else:
+        line = input("Введи названия городов через пробел\n")
+        for city in first_three_cities(line):
+            print(city)
+
+
 if __name__ == "__main__":
-    for pair in islice(letter_pairs(), 50):
-        print(pair)
+    main()
