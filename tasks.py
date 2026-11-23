@@ -5,6 +5,11 @@ from itertools import islice
 from string import ascii_lowercase
 
 
+PAIR_LIMIT = 50
+VALUE_LIMIT = 20
+FUNCTION_STEP = Decimal("0.01")
+
+
 def letter_pairs() -> Iterator[str]:
     """Выдать пары строчных латинских букв в порядке от aa до zz."""
     # Для каждой первой буквы перебираем весь алфавит для второй.
@@ -15,13 +20,12 @@ def function_values(a: float, b: float) -> Iterator[Decimal]:
     """Вычислить значения функции на отрезке [a, b] с шагом 0.01."""
     x = Decimal(str(a))
     end = Decimal(str(b))
-    step = Decimal("0.01")
     coefficient = Decimal("0.1")
 
     # Decimal позволяет прибавлять 0.01 без накопления ошибки округления.
     while x <= end:
         yield coefficient * x ** 2 + 5 * x - 2
-        x += step
+        x += FUNCTION_STEP
 
 
 def first_three_cities(line: str) -> Iterator[str]:
@@ -40,10 +44,10 @@ def main() -> None:
     task = parser.parse_args().task
 
     if task == "pairs":
-        for pair in islice(letter_pairs(), 50):
+        for pair in islice(letter_pairs(), PAIR_LIMIT):
             print(pair)
     elif task == "values":
-        for value in islice(function_values(-5, 7), 20):
+        for value in islice(function_values(-5, 7), VALUE_LIMIT):
             print(f"{value:.5f}")
     else:
         line = input("Введи названия городов через пробел\n")
